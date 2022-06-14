@@ -1,9 +1,14 @@
-import Card from "./componens/Card";
+import Card from "./componens/card";
 import Drawer from "./componens/Drawer";
 import Header from "./componens/Header";
 
 
 function App() {
+
+  const arr =[{"title": "Платье для праздника", "price":178700000, "img":"/img/product/dress_1.jpg"},
+  {"title": "Дизайнерская кофточка", "price":10004500, "img":"/img/product/bluzka_1.webp"},
+  {"title": "Наряд для работы", "price":104547, "img":"/img/product/bluzka_2.jpg"},
+  {"title": "Вот это красота", "price":78780000, "img":"/img/product/dress_2.webp"}]
   return (
     <div className="wrapper clear">
       <Drawer/>
@@ -22,10 +27,14 @@ function App() {
 
         <div className="d-flex">
 
-          <Card/>
-          <Card/>
-          <Card/>
-          <Card/>
+         {arr.map(obj=>(
+          <Card 
+          title = {obj.title}
+          price = {obj.price}
+          img = {obj.img}
+          />
+         ))}
+         
           
         {/* <div className="card">
           <div className="favorite">
