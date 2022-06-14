@@ -1,7 +1,7 @@
 import React from 'react'
 
 export default function 
-() {
+({onClickCart}) {
   return (
     <header className="p-40 align-center d-flex justify-between">
     <div className="d-flex align-center">
@@ -13,7 +13,7 @@ export default function
     </div>
     <div >
       <ul className="d-flex">
-        <li className="mr-30">
+        <li className="mr-30 cu-p" onClick={onClickCart}>
           <img width={18} height={18} src="/img/cart.png"/>
           <span>1545</span>
         </li>

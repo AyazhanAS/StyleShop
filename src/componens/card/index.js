@@ -1,13 +1,22 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styles from "./card.module.scss"
 
-export default function Card({title, price, img}) {
+export default function Card({name, price, img, onFavorite, onPlus}) {
+
+  const [isAdded, setIsAdded] = useState(false)
+
+  const onClickPlus = () =>{
+    onPlus({name, price, img})
+    
+    setIsAdded(!isAdded)
+  }
+
   return (
     <div>
         
         <div className={styles.card}>
         <img width={133} height={112} alt="product" src={img}/>
-          <h5>{title}</h5>
+          <h5>{name}</h5>
           <div className="align-center d-flex justify-between">
             <div className="d-flex flex-column">
               
@@ -15,7 +24,7 @@ export default function Card({title, price, img}) {
               <b>{price} tg</b>
               
             </div>
-            <button onClick = {()=>alert(title )} className={styles.button}><img alt="Plus" width={11} height = {11} src="img/plus.png"/></button>
+            <img onClick = {onClickPlus} className={styles.plus} alt="Plus" width={11} height = {11} src={isAdded?"img/checked.svg":"img/plus.png"}/>
           </div>
         </div>
     </div>

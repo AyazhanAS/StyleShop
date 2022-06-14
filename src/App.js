@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import Card from "./componens/card";
 import Drawer from "./componens/Drawer";
 import Header from "./componens/Header";
@@ -5,14 +6,36 @@ import Header from "./componens/Header";
 
 function App() {
 
-  const arr =[{"title": "Платье для праздника", "price":178700000, "img":"/img/product/dress_1.jpg"},
-  {"title": "Дизайнерская кофточка", "price":10004500, "img":"/img/product/bluzka_1.webp"},
-  {"title": "Наряд для работы", "price":104547, "img":"/img/product/bluzka_2.jpg"},
-  {"title": "Вот это красота", "price":78780000, "img":"/img/product/dress_2.webp"}]
+  const [cartOpened, setCartOpened] = useState(false)
+
+  const [items, setItems] = useState([])
+  const [cartItems, setCartItems] = useState([])
+
+  const onAddToCart =(obj)=>{
+    setCartItems(prev=>[...prev, obj])
+  }
+
+
+
+  useEffect(()=>{
+    fetch("https://62a19fedcd2e8da9b0f58cbd.mockapi.io/items")
+    .then((res)=>{
+      return res.json()
+    }).then(json=>{
+      setItems(json)
+    })
+
+  },[])
+
+ 
   return (
     <div className="wrapper clear">
-      <Drawer/>
-      <Header/>
+    {cartOpened&&<Drawer 
+    cartItems= {cartItems} 
+    onClouseCart = {()=>{setCartOpened(false)}}
+
+    />}
+      <Header onClickCart = {()=>setCartOpened(true)}/>
       <div className="content p-40">
         <div className="mb-40 justify-between d-flex align-center">
         <h1 className=" ">Все товары</h1>
@@ -25,64 +48,20 @@ function App() {
         </div>
       
 
-        <div className="d-flex">
+        <div className="d-flex flex-wrap">
 
-         {arr.map(obj=>(
+         {items.map(obj=>(
           <Card 
-          title = {obj.title}
+          name = {obj.name}
           price = {obj.price}
           img = {obj.img}
+          onPlus = {(e)=>onAddToCart(e)}
+          
           />
          ))}
          
           
-        {/* <div className="card">
-          <div className="favorite">
-          <img alt="like" src="img/like.svg"/>
-          </div>
-          
-        <img width={133} height={112} alt="product" src="img/product/bluzka_2.jpg"/>
-          <h5>Женские нежные кофты</h5>
-          <div className="align-center d-flex justify-between">
-            <div className="d-flex flex-column">
-              
-              <span>цена</span>
-              <b>458 tg</b>
-              
-            </div>
-            <button className="button"><img alt="Plus" width={11} height = {11} src="img/plus.png"/></button>
-          </div>
-        </div>
-
-        
-
-        <div className="card">
-        <img width={133} height={112} alt="product" src="img/product/npnn.png"/>
-          <h5>Женские нежные кофты</h5>
-          <div className="align-center d-flex justify-between">
-            <div className="d-flex flex-column">
-              
-              <span>цена</span>
-              <b>458 tg</b>
-              
-            </div>
-            <button className="button"><img alt="Plus" width={11} height = {11} src="img/plus.png"/></button>
-          </div>
-        </div>
-
-        <div className="card">
-        <img width={133} height={112} alt="product" src="img/product/bluzka_5.jpg"/>
-          <h5>Женские нежные кофты</h5>
-          <div className="align-center d-flex justify-between">
-            <div className="d-flex flex-column">
-              
-              <span>цена</span>
-              <b>458 tg</b>
-              
-            </div>
-            <button className="button"><img alt="Plus" width={11} height = {11} src="img/plus.png"/></button>
-          </div>
-        </div> */}
+    
 
 
         </div>
