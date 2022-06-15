@@ -11,6 +11,13 @@ function App() {
   const [items, setItems] = useState([])
   const [cartItems, setCartItems] = useState([])
 
+  const [searchValue, setSearchValue] = useState("")
+
+  const onChangeSearch = (event)=>{
+    setSearchValue(event.target.value)
+    console.log(event.target.value);
+  }
+
   const onAddToCart =(obj)=>{
     setCartItems(prev=>[...prev, obj])
   }
@@ -27,6 +34,10 @@ function App() {
 
   },[])
 
+  const clearSearch = ()=>{
+    setSearchValue("")
+  }
+
  
   return (
     <div className="wrapper clear">
@@ -38,11 +49,12 @@ function App() {
       <Header onClickCart = {()=>setCartOpened(true)}/>
       <div className="content p-40">
         <div className="mb-40 justify-between d-flex align-center">
-        <h1 className=" ">Все товары</h1>
+        <h1 className=" ">{searchValue?`Поиск по ${searchValue}`:"Все товары"}</h1>
         <div className="search-block d-flex">
           <img alt="search" src="/img/search.svg"/>
-          <input placeholder="search"/>
-
+          <input placeholder="search" onChange={onChangeSearch} value={searchValue}/>
+          {searchValue&&<img onClick={clearSearch} className="x  cu-p" src="img/x.svg" alt="x"/>}
+          
         </div>
           
         </div>
@@ -50,8 +62,9 @@ function App() {
 
         <div className="d-flex flex-wrap">
 
-         {items.map(obj=>(
+         {items.filter(item=>item.name.toLowerCase().includes(searchValue)).map((obj, index)=>(
           <Card 
+          кеу={index}
           name = {obj.name}
           price = {obj.price}
           img = {obj.img}
