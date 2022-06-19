@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import Card from "./componens/card";
 import Drawer from "./componens/Drawer";
 import Header from "./componens/Header";
+import axios from "axios"
+import {Route, Routes} from "react-router-dom"
+import Home from "./pages/Home";
+import Favorits from "./pages/Favorits";
 
 
 function App() {
@@ -13,26 +17,59 @@ function App() {
 
   const [searchValue, setSearchValue] = useState("")
 
-  const onChangeSearch = (event)=>{
-    setSearchValue(event.target.value)
-    console.log(event.target.value);
-  }
+  const [favorites, setFavorites] = useState([])
 
-  const onAddToCart =(obj)=>{
-    setCartItems(prev=>[...prev, obj])
-  }
+  
 
 
 
   useEffect(()=>{
-    fetch("https://62a19fedcd2e8da9b0f58cbd.mockapi.io/items")
-    .then((res)=>{
-      return res.json()
-    }).then(json=>{
-      setItems(json)
+
+
+    axios.get("https://62a19fedcd2e8da9b0f58cbd.mockapi.io/items").then(res=>{
+      setItems(res.data)
+    })
+
+    axios.get("https://62a19fedcd2e8da9b0f58cbd.mockapi.io/cart").then(res=>{
+      setCartItems(res.data)
+    })
+
+    axios.get("https://62a19fedcd2e8da9b0f58cbd.mockapi.io/favorits").then(res=>{
+      setFavorites(res.data)
     })
 
   },[])
+
+  const onChangeSearch = (event)=>{
+    setSearchValue(event.target.value)
+ 
+  }
+
+  const onAddToFavorite =(obj)=>{
+    if(favorites.find(objFav=>objFav.id===obj.id)){
+      axios.delete(`https://62a19fedcd2e8da9b0f58cbd.mockapi.io/favorites/${obj.id}`)
+      setFavorites(prev=>prev.filter(item=>item.id!==obj.id))
+    }else{
+      axios.post("https://62a19fedcd2e8da9b0f58cbd.mockapi.io/favorites", obj)
+      setFavorites(prev=>[...prev, obj])
+
+    }
+    
+  
+  }
+
+
+  const onAddToCart =(obj)=>{
+    
+    axios.post("https://62a19fedcd2e8da9b0f58cbd.mockapi.io/cart", obj)
+    setCartItems(prev=>[...prev, obj])
+  }
+
+  const onRemoveItem=(id)=>{
+    axios.delete(`https://62a19fedcd2e8da9b0f58cbd.mockapi.io/cart/${id}`)
+    setCartItems(prev=>prev.filter(item=>item.id!==id))
+  }
+
 
   const clearSearch = ()=>{
     setSearchValue("")
@@ -42,45 +79,37 @@ function App() {
   return (
     <div className="wrapper clear">
     {cartOpened&&<Drawer 
+    onRemoveItem={onRemoveItem}
     cartItems= {cartItems} 
     onClouseCart = {()=>{setCartOpened(false)}}
 
     />}
       <Header onClickCart = {()=>setCartOpened(true)}/>
-      <div className="content p-40">
-        <div className="mb-40 justify-between d-flex align-center">
-        <h1 className=" ">{searchValue?`Поиск по ${searchValue}`:"Все товары"}</h1>
-        <div className="search-block d-flex">
-          <img alt="search" src="/img/search.svg"/>
-          <input placeholder="search" onChange={onChangeSearch} value={searchValue}/>
-          {searchValue&&<img onClick={clearSearch} className="x  cu-p" src="img/x.svg" alt="x"/>}
-          
-        </div>
-          
-        </div>
-      
+      <Routes>
+      <Route path="/" exact element={
+         <Home 
+         items={items} 
+         searchValue={searchValue}  
+         clearSearch={clearSearch}
+         onChangeSearch={onChangeSearch}
+         onAddToCart={onAddToCart}
+         onAddToFavorite={onAddToFavorite}
+   
+         />
+   
+      }/>
+      <Route path="/favorites" element={<Favorits
+      items={favorites}
+      onAddToFavorite={onAddToFavorite }
+      />}>
 
-        <div className="d-flex flex-wrap">
+      </Route>
 
-         {items.filter(item=>item.name.toLowerCase().includes(searchValue)).map((obj, index)=>(
-          <Card 
-          кеу={index}
-          name = {obj.name}
-          price = {obj.price}
-          img = {obj.img}
-          onPlus = {(e)=>onAddToCart(e)}
-          
-          />
-         ))}
-         
-          
-    
-
-
-        </div>
-      
-      </div>
+      </Routes>
      
+     
+    
+    
     </div>
   );
 }
